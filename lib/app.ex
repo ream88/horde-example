@@ -1,18 +1,9 @@
 defmodule App do
-  @moduledoc """
-  Documentation for `App`.
-  """
+  def start_worker(name) do
+    Horde.DynamicSupervisor.start_child(App.WorkerSupervisor, {App.Worker, [name]})
+  end
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> App.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def workers() do
+    Horde.DynamicSupervisor.which_children(App.WorkerSupervisor)
   end
 end

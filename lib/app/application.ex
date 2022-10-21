@@ -7,9 +7,15 @@ defmodule App.Application do
 
   @impl true
   def start(_type, _args) do
+    topologies = Application.get_env(:libcluster, :topologies)
+
     children = [
       # Starts a worker by calling: App.Worker.start_link(arg)
       # {App.Worker, arg}
+      {Cluster.Supervisor, [topologies, [name: App.ClusterSupervisor]]},
+      {Horde.Registry, [name: App.WorkerRegistry, keys: :unique]},
+      {Horde.DynamicSupervisor,
+       [name: App.WorkerSupervisor, strategy: :one_for_one, members: :auto]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
